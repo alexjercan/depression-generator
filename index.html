@@ -19,10 +19,6 @@
             </tr>
         </table>
 
-        <button id="run">
-            Run
-        </button>
-
         <script>
             const features = {
                 "Face": 5,
@@ -36,53 +32,58 @@
             const score_placeholder = document.getElementById("score-placeholder");
             const weight_placeholder = document.getElementById("weight-placeholder");
 
+            const inputs = [];
+
             const scores = {};
             for (let name in features) {
+                // Add the header names
                 const th = document.createElement("th");
                 const header = document.createTextNode(name);
                 th.appendChild(header);
                 header_placeholder.appendChild(th);
 
+                // Add the weights row
                 const td = document.createElement("td");
                 const weight = document.createTextNode(features[name]);
                 td.appendChild(weight)
                 weight_placeholder.appendChild(td);
 
+                // Default value for score is 1
                 scores[name] = 1;
 
+                // Add score row
                 const td2 = document.createElement("td");
                 const input = document.createElement("input");
                 input.type = "text";
                 input.value = scores[name];
                 input.addEventListener("input", (e) => {
+                    // On input change update the scores
                     scores[name] = +e.target.value;
                 });
                 td2.appendChild(input);
                 score_placeholder.appendChild(td2);
+
+                // Save the ref to the input
+                inputs.push(input);
             }
 
+            // Add total column
             const th = document.createElement("th");
             const header = document.createTextNode("Total");
             th.appendChild(header);
             header_placeholder.appendChild(th);
 
+            // Compute total weight
             let weight_total = 0;
             for (let name in features) {
                 weight_total += features[name];
             }
-
             const td = document.createElement("td");
             const weight = document.createTextNode(weight_total);
             td.appendChild(weight)
             weight_placeholder.appendChild(td);
 
-            const td2 = document.createElement("td");
-            const score = document.createTextNode(1);
-            td2.appendChild(score);
-            score_placeholder.appendChild(td2);
-
-            const run = document.getElementById("run");
-            run.addEventListener("click", (e) => {
+            function computeSMV() {
                 let weighted_total = 1;
                 for (let name in features) {
                     const weight = features[name];
@@ -93,9 +94,21 @@
                     weighted_total *= weighted_score;
                 }
 
-                const avg_smv = weighted_total ** (1.0 / weight_total);
-                score.data = avg_smv;
-            });
+                return avg_smv = weighted_total ** (1.0 / weight_total);
+            }
+
+            // Add placeholder for score total
+            const td2 = document.createElement("td");
+            const score = document.createTextNode(computeSMV());
+            td2.appendChild(score);
+            score_placeholder.appendChild(td2);
+
+            // When the input changes update the smv
+            for (let input of inputs) {
+                input.addEventListener("input", (e) => {
+                    score.data = computeSMV();
+                });
+            }
         </script>
     </body>
 </html>
